@@ -934,8 +934,6 @@
       let quizQuestions = {};
 
       async function loadQuestionsFromDB(subject) {
-        if (quizQuestions[subject]) return;
-
         try {
           const response = await fetch(`${API_URL}/questions/${subject}`);
           const dbQuestions = await response.json();
@@ -956,7 +954,7 @@
       }
 
       document.querySelectorAll(".subject-tab").forEach((tab) => {
-        tab.addEventListener("click", function () {
+        tab.addEventListener("click", async function () {
           currentSubject = this.dataset.subject;
           quizStarted = true;
           userAnswers = {};
@@ -968,18 +966,12 @@
 
           document.getElementById("start-area").style.display = "none";
 
-          if (lessons[currentSubject]) {
-            document.getElementById("quiz-area").style.display = "none";
-            document.getElementById("lessons-area").style.display = "block";
-            renderLessons(currentSubject);
-          } else {
-            document.getElementById("lessons-area").style.display = "none";
-            document.getElementById("quiz-area").style.display = "block";
-            loadQuestionsFromDB(currentSubject).then(() => {
-              renderQuestions(currentSubject);
-              updateAnswerCount();
-            });
-          }
+          await loadQuestionsFromDB(currentSubject);
+
+          document.getElementById("lessons-area").style.display = "none";
+          document.getElementById("quiz-area").style.display = "block";
+          renderQuestions(currentSubject);
+          updateAnswerCount();
         });
       });
 
