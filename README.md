@@ -62,18 +62,39 @@ Dùng Live Server để chạy
 bash
 pip install --upgrade pip
 📂 Cấu trúc thư mục
-text
 intelligence-system/
 │
-├── backend/
-│   ├── app.py
-│   ├── requirements.txt
-│   └── venv/
+├── src/
+│   ├── backend/                # Flask backend
+│   │   ├── app.py
+│   │   ├── routes/
+│   │   ├── services/
+│   │   ├── models/
+│   │   └── database/
+│   │       └── database.db
+│   │
+│   └── frontend/               # Giao diện
+│       ├── admin/
+│       ├── css/
+│       ├── js/
+│       ├── index.html
+│       ├── login.html
+│       ├── register.html
+│       ├── profile.html
+│       ├── exercises.html
+│       ├── history.html
+│       ├── scores.html
+│       └── subjects.html
 │
-├── frontend/
-│   ├── index.html
-│   ├── css/
-│   └── js/
+├── notebooks/                  # Notebook phân tích ML (nếu có)
+│   └── analysis.ipynb
 │
+├── data/                       # Dataset (nếu có)
+│   └── dataset.csv
+│
+├── venv/                       ❌ (KHÔNG PUSH)
+│
+├── requirements.txt
+├── .gitignore
 └── README.md
 ```
