@@ -10,10 +10,55 @@ Theo dõi thời gian học tập của người dùng
 👉 Mục tiêu: Cá nhân hóa việc học, giúp người dùng học hiệu quả hơn.
 
 🛠 Công nghệ sử dụng
-Backend: Python (Flask)
 Frontend: HTML, CSS, JavaScript
+Backend: Python (Flask)
 API: Flask + Flask-CORS
-📂 Cấu trúc thư mục
+⚙️ Hướng dẫn cài đặt và chạy project
+🔹 1. Clone project
+git clone https://github.com/dkhanh2706/hethongthonhminh.git
+cd intelligence-system
+🔹 2. Chạy Backend
+➤ Di chuyển vào backend
+cd src/backend
+➤ Tạo môi trường ảo (venv)
+python -m venv venv
+➤ Kích hoạt môi trường ảo
+
+Windows:
+
+venv\Scripts\activate
+
+MacOS / Linux:
+
+source venv/bin/activate
+➤ Cài đặt thư viện
+pip install flask flask-cors
+
+Hoặc nếu có requirements.txt:
+
+pip install -r requirements.txt
+➤ Chạy server
+python server.py
+
+👉 Backend sẽ chạy tại:
+
+http://127.0.0.1:5000
+🔹 3. Chạy Frontend
+Mở thư mục src/frontend bằng VS Code
+Click chuột phải vào file index.html
+Chọn "Open with Live Server"
+
+👉 Frontend sẽ chạy tại:
+
+http://127.0.0.1:5500
+⛔ Dừng server
+Ctrl + C
+⚠️ Lưu ý
+Không push thư mục venv/ lên GitHub
+Nên thêm venv/ vào .gitignore
+Chạy backend trước khi mở frontend
+Nếu lỗi → kiểm tra port 5000 hoặc 5500
+📂 Cấu trúc thư mục:
 intelligence-system/
 │
 ├── src/
@@ -49,47 +94,3 @@ intelligence-system/
 ├── requirements.txt
 ├── .gitignore
 └── README.md
-⚙️ Hướng dẫn cài đặt
-
-1. Clone project
-   git clone https://github.com/dkhanh2706/sangt7.git
-   cd sangt7
-2. Tạo môi trường ảo
-   python -m venv venv
-3. Kích hoạt môi trường ảo
-
-Windows:
-
-venv\Scripts\activate
-
-MacOS/Linux:
-
-source venv/bin/activate 4. Di chuyển vào backend
-cd src/backend 5. Cài đặt thư viện
-pip install flask flask-cors
-
-Hoặc nếu có requirements.txt:
-
-pip install -r requirements.txt
-▶️ Chạy dự án
-🔹 Chạy Backend
-python server.py
-
-👉 Server chạy tại:
-
-http://127.0.0.1:5000
-🔹 Chạy Frontend
-Mở thư mục src/frontend bằng VS Code
-Click chuột phải vào index.html
-Chọn "Open with Live Server"
-
-👉 Frontend chạy tại:
-
-http://127.0.0.1:5500
-⛔ Dừng server
-Ctrl + C
-⚠️ Lưu ý
-Không push thư mục venv/ lên GitHub
-Nên thêm venv/ vào .gitignore
-Chạy backend trước khi mở frontend
-Nếu lỗi port → kiểm tra 5000 và 5500
