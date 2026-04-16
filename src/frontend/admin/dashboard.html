@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .dashboard {
+            min-height: 100vh;
+            background: #f3f4f6;
+        }
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            height: 100vh;
+            background: linear-gradient(180deg, #4f46e5 0%, #4338ca 100%);
+            padding: 24px;
+            color: white;
+        }
+        .sidebar h2 {
+            font-size: 1.5rem;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .sidebar nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            transition: all 0.3s;
+        }
+        .sidebar nav a:hover, .sidebar nav a.active {
+            background: rgba(255,255,255,0.15);
+            color: white;
+        }
+        .sidebar .logout {
+            position: absolute;
+            bottom: 24px;
+            left: 24px;
+            right: 24px;
+        }
+        .sidebar .logout a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s;
+            background: rgba(239,68,68,0.2);
+        }
+        .sidebar .logout a:hover {
+            background: rgba(239,68,68,0.4);
+            color: white;
+        }
+        .main {
+            margin-left: 260px;
+            padding: 32px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+        .header h1 {
+            font-size: 1.75rem;
+            color: #1f2937;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 16px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .user-info .avatar {
+            width: 40px;
+            height: 40px;
+            background: #4f46e5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+        .stat-card {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .stat-card .icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            margin-bottom: 16px;
+        }
+        .stat-card .icon.blue { background: #dbeafe; color: #2563eb; }
+        .stat-card .icon.green { background: #d1fae5; color: #059669; }
+        .stat-card .icon.purple { background: #ede9fe; color: #7c3aed; }
+        .stat-card h3 { font-size: 2rem; color: #1f2937; margin-bottom: 4px; }
+        .stat-card p { color: #6b7280; font-size: 0.9rem; }
+        .table-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .table-card h3 {
+            padding: 20px 24px;
+            font-size: 1.1rem;
+            color: #1f2937;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 16px 24px; text-align: left; }
+        th { background: #f9fafb; font-weight: 600; color: #6b7280; font-size: 0.85rem; text-transform: uppercase; }
+        td { color: #1f2937; border-bottom: 1px solid #e5e7eb; }
+        tr:last-child td { border-bottom: none; }
+        .role-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        .role-badge.admin { background: #ede9fe; color: #7c3aed; }
+        .role-badge.user { background: #d1fae5; color: #059669; }
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            margin-right: 8px;
+            transition: all 0.2s;
+        }
+        .action-btn.reset {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .action-btn.reset:hover { background: #fde68a; }
+        .action-btn.delete {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        .action-btn.delete:hover { background: #fecaca; }
+        .message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-weight: 500;
+            z-index: 1000;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(100px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .message.success { background: #d1fae5; color: #065f46; border-left: 4px solid #059669; }
+        .message.error { background: #fee2e2; color: #991b1b; border-left: 4px solid #dc2626; }
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            width: 400px;
+            max-width: 90%;
+        }
+        .modal h3 { margin-bottom: 16px; }
+        .modal input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            box-sizing: border-box;
+        }
+        .modal input:focus {
+            outline: none;
+            border-color: #4f46e5;
+        }
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+        .modal-buttons button {
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            border: none;
+        }
+        .modal-buttons .cancel {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+        .modal-buttons .confirm {
+            background: #4f46e5;
+            color: white;
+        }
+        .modal-buttons .confirm:hover { background: #4338ca; }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <aside class="sidebar">
+            <h2><i class="fas fa-shield-alt"></i> Admin Panel</h2>
+            <nav>
+                <a href="dashboard.html" class="active"><i class="fas fa-home"></i> Dashboard</a>
+                <a href="questions.html"><i class="fas fa-question-circle"></i> Quản lý câu hỏi</a>
+                <a href="notebook.html"><i class="fas fa-chart-bar"></i> Phân tích dữ liệu</a>
+            </nav>
+            <div class="logout">
+                <a href="../login.html" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
+            </div>
+        </aside>
+        
+        <main class="main">
+            <div class="header">
+                <h1>Tổng quan</h1>
+                <div class="user-info">
+                    <div class="avatar" id="adminAvatar">A</div>
+                    <div>
+                        <strong id="adminName">Admin</strong>
+                        <div style="font-size: 0.8rem; color: #6b7280;">Quản trị viên</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="icon blue"><i class="fas fa-users"></i></div>
+                    <h3 id="totalUsers">0</h3>
+                    <p>Tổng người dùng</p>
+                </div>
+                <div class="stat-card">
+                    <div class="icon green"><i class="fas fa-user-check"></i></div>
+                    <h3 id="totalAdmins">0</h3>
+                    <p>Tổng admin</p>
+                </div>
+                <div class="stat-card">
+                    <div class="icon purple"><i class="fas fa-chart-line"></i></div>
+                    <h3 id="totalAccounts">0</h3>
+                    <p>Tổng tài khoản</p>
+                </div>
+            </div>
+            
+            <div class="table-card">
+                <h3>Danh sách tài khoản</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Họ tên</th>
+                            <th>Email</th>
+                            <th>Vai trò</th>
+                            <th>Ngày tạo</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="accountList"></tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+    
+    <div class="modal-overlay" id="resetModal">
+        <div class="modal">
+            <h3>Đổi mật khẩu</h3>
+            <p id="resetUserName" style="color: #6b7280; margin-bottom: 16px;"></p>
+            <input type="password" id="newPassword" placeholder="Nhập mật khẩu mới (tối thiểu 6 ký tự)">
+            <div class="modal-buttons">
+                <button class="cancel" onclick="closeResetModal()">Hủy</button>
+                <button class="confirm" onclick="confirmReset()">Đổi mật khẩu</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal">
+            <h3>Xác nhận xóa</h3>
+            <p id="deleteUserName" style="color: #6b7280; margin-bottom: 16px;"></p>
+            <p style="color: #dc2626; font-size: 0.9rem;">Cảnh báo: Hành động này sẽ xóa vĩnh viễn tài khoản và lịch sử học tập!</p>
+            <div class="modal-buttons">
+                <button class="cancel" onclick="closeDeleteModal()">Hủy</button>
+                <button class="confirm" style="background: #dc2626;" onclick="confirmDelete()">Xóa</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="message"></div>
+    
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+        let currentUser = null;
+        let currentAdminId = null;
+        let pendingUserId = null;
+        
+        function checkAuth() {
+            const user = JSON.parse(sessionStorage.getItem('user') || '{}');
+            if (!user.role || user.role !== 'admin') {
+                window.location.href = '../login.html';
+            }
+            currentAdminId = user.id;
+            return user;
+        }
+
+        function logout() {
+            sessionStorage.removeItem('user');
+            window.location.href = '../login.html';
+        }
+
+        function showMessage(text, type) {
+            const msg = document.getElementById('message');
+            msg.textContent = text;
+            msg.className = `message ${type} show`;
+            setTimeout(() => msg.classList.remove('show'), 3000);
+        }
+
+        function openResetModal(user) {
+            currentUser = user;
+            document.getElementById('resetUserName').textContent = `Đổi mật khẩu cho: ${user.fullname}`;
+            document.getElementById('newPassword').value = '';
+            document.getElementById('resetModal').classList.add('show');
+        }
+
+        function closeResetModal() {
+            document.getElementById('resetModal').classList.remove('show');
+            currentUser = null;
+        }
+
+        async function confirmReset() {
+            const newPassword = document.getElementById('newPassword').value;
+            if (!newPassword || newPassword.length < 6) {
+                showMessage('Mật khẩu phải có ít nhất 6 ký tự', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/change-password`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: currentUser.id,
+                        newPassword: newPassword,
+                        adminId: currentAdminId
+                    })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showMessage(result.message, 'success');
+                    closeResetModal();
+                } else {
+                    showMessage(result.message, 'error');
+                }
+            } catch (e) {
+                showMessage('Lỗi kết nối server', 'error');
+            }
+        }
+
+        function openDeleteModal(user) {
+            pendingUserId = user.id;
+            document.getElementById('deleteUserName').textContent = `Xóa tài khoản: ${user.fullname}`;
+            document.getElementById('deleteModal').classList.add('show');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('show');
+            pendingUserId = null;
+        }
+
+        async function confirmDelete() {
+            if (!pendingUserId) return;
+
+            try {
+                const response = await fetch(`${API_URL}/delete-user`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: pendingUserId,
+                        adminId: currentAdminId
+                    })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showMessage(result.message, 'success');
+                    closeDeleteModal();
+                    loadDashboard();
+                } else {
+                    showMessage(result.message, 'error');
+                }
+            } catch (e) {
+                showMessage('Lỗi kết nối server', 'error');
+            }
+        }
+
+        async function loadDashboard() {
+            const user = checkAuth();
+            document.getElementById('adminName').textContent = user.fullname || 'Admin';
+            document.getElementById('adminAvatar').textContent = (user.fullname || 'A')[0].toUpperCase();
+
+            try {
+                const response = await fetch(API_URL + '/all-users');
+                const users = await response.json();
+
+                const admins = users.filter(u => u.role === 'admin');
+                const regularUsers = users.filter(u => u.role === 'user');
+
+                document.getElementById('totalUsers').textContent = regularUsers.length;
+                document.getElementById('totalAdmins').textContent = admins.length;
+                document.getElementById('totalAccounts').textContent = users.length;
+
+                const tbody = document.getElementById('accountList');
+                let html = '';
+
+                admins.forEach(a => {
+                    const isSelf = a.id === currentAdminId;
+                    html += `<tr>
+                        <td>${a.id}</td>
+                        <td>${a.fullname}</td>
+                        <td>${a.email}</td>
+                        <td><span class="role-badge admin">Admin</span></td>
+                        <td>${new Date(a.createdAt).toLocaleDateString('vi-VN')}</td>
+                        <td>${isSelf ? '<span style="color: #6b7280; font-size: 0.85rem;">(đang đăng nhập)</span>' : '-'}</td>
+                    </tr>`;
+                });
+
+                regularUsers.forEach(u => {
+                    html += `<tr>
+                        <td>${u.id}</td>
+                        <td>${u.fullname}</td>
+                        <td>${u.email}</td>
+                        <td><span class="role-badge user">User</span></td>
+                        <td>${new Date(u.createdAt).toLocaleDateString('vi-VN')}</td>
+                        <td>
+                            <button class="action-btn reset" onclick='openResetModal(${JSON.stringify(u)})'>
+                                <i class="fas fa-key"></i> Đổi mật khẩu
+                            </button>
+                            <button class="action-btn delete" onclick='openDeleteModal(${JSON.stringify(u)})'>
+                                <i class="fas fa-trash"></i> Xóa
+                            </button>
+                        </td>
+                    </tr>`;
+                });
+
+                tbody.innerHTML = html || '<tr><td colspan="6" style="text-align: center; color: #6b7280;">Chưa có tài khoản nào</td></tr>';
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+                showMessage('Lỗi tải dữ liệu', 'error');
+            }
+        }
+
+        loadDashboard();
+    </script>
+</body>
+</html>

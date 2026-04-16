@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lịch sử học - SmartLearn</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .page-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 24px; padding: 40px; color: white; margin-bottom: 32px; }
+        .page-header h1 { font-size: 2rem; margin-bottom: 8px; }
+        .history-list { display: flex; flex-direction: column; gap: 16px; }
+        .history-card { background: white; border-radius: 16px; padding: 20px 24px; display: flex; align-items: center; gap: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .history-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+        .history-info { flex: 1; }
+        .history-info h3 { font-size: 1rem; margin-bottom: 4px; }
+        .history-info p { color: #6b7280; font-size: 0.85rem; }
+        .history-score { text-align: right; }
+        .history-score .score { font-size: 1.5rem; font-weight: 700; color: #4f46e5; }
+        .history-score .time { color: #9ca3af; font-size: 0.8rem; }
+        .empty-state { text-align: center; padding: 60px 20px; color: #6b7280; }
+        .empty-state i { font-size: 3rem; margin-bottom: 16px; color: #d1d5db; }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="nav-brand"><i class="fas fa-graduation-cap"></i><span>SmartLearn</span></div>
+        <nav class="nav-menu">
+            <a href="index.html" class="nav-link"><i class="fas fa-home"></i><span>Trang chủ</span></a>
+            <a href="exercises.html" class="nav-link"><i class="fas fa-pencil-alt"></i><span>Luyện tập</span></a>
+            <a href="scores.html" class="nav-link"><i class="fas fa-chart-line"></i><span>Điểm số</span></a>
+            <a href="history.html" class="nav-link active"><i class="fas fa-history"></i><span>Lịch sử</span></a>
+            <a href="profile.html" class="nav-link"><i class="fas fa-user"></i><span>Hồ sơ</span></a>
+        </nav>
+        <div class="nav-user" id="navUser">
+            <div class="user-avatar"><i class="fas fa-user"></i></div>
+            <span class="user-name" id="userName">Người dùng</span>
+        </div>
+    </header>
+    <main class="main-content">
+        <div class="page-header">
+            <h1>Lịch sử học</h1>
+            <p>Xem lại lịch sử bài tập đã làm</p>
+        </div>
+        <div class="history-list" id="historyList">
+            <div class="empty-state">
+                <i class="fas fa-clock"></i>
+                <p>Đang tải dữ liệu...</p>
+            </div>
+</div>
+    </main>
+    <script src="js/main.js"></script>
+    <script>
+        async function loadHistory() {
+            const user = JSON.parse(sessionStorage.getItem('user') || '{}');
+            const userId = user.id;
+            
+            if (!userId) {
+                document.getElementById('historyList').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-user-clock"></i>
+                        <p>Vui lòng đăng nhập để xem lịch sử</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/history/${userId}`);
+                if (!response.ok) {
+                    throw new Error('Server lỗi: ' + response.status);
+                }
+                const history = await response.json();
+                
+                if (history.length === 0) {
+                    document.getElementById('historyList').innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-clock"></i>
+                            <p>Chưa có lịch sử làm bài</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                const subjectIcons = {
+                    'Python': { icon: 'fab fa-python', color: '#3776ab' },
+                    'JavaScript': { icon: 'fab fa-js', color: '#f7df1e' },
+                    'Toán': { icon: 'fas fa-calculator', color: '#4f46e5' },
+                    'Tiếng Anh': { icon: 'fas fa-language', color: '#10b981' }
+                };
+                
+                document.getElementById('historyList').innerHTML = history.map(h => {
+                    const subjectInfo = subjectIcons[h.subject] || { icon: 'fas fa-book', color: '#6b7280' };
+                    const date = new Date(h.createdAt).toLocaleString('vi-VN');
+                    return `
+                        <div class="history-card">
+                            <div class="history-icon" style="background: ${subjectInfo.color}20; color: ${subjectInfo.color};">
+                                <i class="${subjectInfo.icon}"></i>
+                            </div>
+                            <div class="history-info">
+                                <h3>${h.subject}</h3>
+                                <p>${date}</p>
+                            </div>
+                            <div class="history-score">
+                                <div class="score">${h.score}/${h.total}</div>
+                                <div class="time">${Math.round(h.score/h.total*100)}%</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (e) {
+                console.error('Lỗi tải lịch sử:', e);
+                document.getElementById('historyList').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Không thể tải lịch sử. Server có thể chưa chạy.</p>
+                    </div>
+                `;
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', loadHistory);
+    </script>
+</body>
+</html>

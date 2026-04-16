@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hồ sơ - SmartLearn</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .profile-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 24px;
+            padding: 40px;
+            color: white;
+            margin-bottom: 32px;
+        }
+        .profile-header h1 { font-size: 2rem; margin-bottom: 8px; }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .stat-card .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #4f46e5;
+        }
+        .stat-card .stat-label {
+            font-size: 0.9rem;
+            color: #6b7280;
+            margin-top: 8px;
+        }
+        
+        .profile-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .profile-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-group { margin-bottom: 16px; }
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #374151;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #4f46e5;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            background: #4f46e5;
+            color: white;
+        }
+        .btn-primary:hover { background: #4338ca; }
+        
+        .message {
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-weight: 500;
+            margin-bottom: 16px;
+            display: none;
+        }
+        .message.show { display: block; }
+        .message.success { background: #d1fae5; color: #065f46; }
+        .message.error { background: #fee2e2; color: #991b1b; }
+        
+        .avatar-section {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .avatar-preview {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 3rem;
+            color: white;
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
+        }
+        .avatar-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .upload-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #f3f4f6;
+            color: #374151;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .upload-btn:hover {
+            background: #e5e7eb;
+        }
+        #avatarInput {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="nav-brand">
+            <i class="fas fa-graduation-cap"></i>
+            <span>SmartLearn</span>
+        </div>
+        <nav class="nav-menu">
+            <a href="index.html" class="nav-link">
+                <i class="fas fa-home"></i>
+                <span>Trang chủ</span>
+            </a>
+            <a href="exercises.html" class="nav-link">
+                <i class="fas fa-pencil-alt"></i>
+                <span>Luyện tập</span>
+            </a>
+            <a href="scores.html" class="nav-link">
+                <i class="fas fa-chart-line"></i>
+                <span>Điểm số</span>
+            </a>
+            <a href="history.html" class="nav-link">
+                <i class="fas fa-history"></i>
+                <span>Lịch sử</span>
+            </a>
+            <a href="profile.html" class="nav-link active">
+                <i class="fas fa-user"></i>
+                <span>Hồ sơ</span>
+            </a>
+        </nav>
+        <div class="nav-user" id="navUser">
+            <div class="user-avatar"><i class="fas fa-user"></i></div>
+            <span class="user-name" id="userName">Người dùng</span>
+        </div>
+    </header>
+    
+    <main class="main-content">
+        <div class="profile-header">
+            <h1>Hồ sơ cá nhân</h1>
+            <p>Quản lý thông tin và cài đặt tài khoản</p>
+        </div>
+        
+        <div class="profile-card">
+            <h3><i class="fas fa-image"></i> Đổi avatar</h3>
+            <div class="avatar-section">
+                <div class="avatar-preview" id="avatarPreview">
+                    <i class="fas fa-user"></i>
+                </div>
+                <label class="upload-btn" for="avatarInput">
+                    <i class="fas fa-upload"></i> Tải ảnh từ máy
+                </label>
+                <input type="file" id="avatarInput" accept="image/*" onchange="uploadAvatar(event)">
+            </div>
+            <button class="btn btn-primary" onclick="saveAvatar()">Lưu avatar</button>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="totalExercises">0</div>
+                <div class="stat-label">Tổng bài đã làm</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="avgScore">0.0</div>
+                <div class="stat-label">Điểm trung bình</div>
+            </div>
+        </div>
+        
+        <div class="profile-card">
+            <h3><i class="fas fa-key"></i> Đổi mật khẩu</h3>
+            <div id="passwordMessage"></div>
+            <div class="form-group">
+                <label>Mật khẩu hiện tại</label>
+                <input type="password" id="oldPassword" placeholder="Nhập mật khẩu hiện tại">
+            </div>
+            <div class="form-group">
+                <label>Mật khẩu mới</label>
+                <input type="password" id="newPassword" placeholder="Nhập mật khẩu mới">
+            </div>
+            <div class="form-group">
+                <label>Xác nhận mật khẩu mới</label>
+                <input type="password" id="confirmPassword" placeholder="Nhập lại mật khẩu mới">
+            </div>
+            <button class="btn btn-primary" onclick="changePassword()">Đổi mật khẩu</button>
+        </div>
+        
+        <div class="profile-card">
+            <h3><i class="fas fa-envelope"></i> Đổi email</h3>
+            <div id="emailMessage"></div>
+            <div class="form-group">
+                <label>Email mới</label>
+                <input type="email" id="newEmail" placeholder="Nhập email mới">
+            </div>
+            <div class="form-group">
+                <label>Mật khẩu để xác nhận</label>
+                <input type="password" id="emailConfirmPassword" placeholder="Nhập mật khẩu">
+            </div>
+            <button class="btn btn-primary" onclick="changeEmail()">Đổi email</button>
+        </div>
+    </main>
+    
+    <script src="js/main.js"></script>
+    <script>
+        let uploadedImage = null;
+        
+        async function loadStats() {
+            const user = JSON.parse(sessionStorage.getItem('user') || '{}');
+            if (!user.id) {
+                alert('Vui lòng đăng nhập!');
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/history/${user.id}`);
+                const history = await response.json();
+                
+                const totalExercises = history.length;
+                const avgScore = totalExercises > 0 
+                    ? (history.reduce((sum, h) => sum + (h.score / h.total * 10), 0) / totalExercises).toFixed(1)
+                    : 0;
+                
+                document.getElementById('totalExercises').textContent = totalExercises;
+                document.getElementById('avgScore').textContent = avgScore;
+                
+                loadAvatar();
+            } catch (e) {
+                console.error(e);
+            }
+        }
+        
+        function loadAvatar() {
+            const savedImage = localStorage.getItem('avatarImage');
+            if (savedImage) {
+                uploadedImage = savedImage;
+                const preview = document.getElementById('avatarPreview');
+                preview.style.background = 'none';
+                preview.innerHTML = `<img src="${savedImage}" alt="Avatar">`;
+            }
+        }
+        
+        function showMessage(text, type, elementId) {
+            const msg = document.getElementById(elementId);
+            msg.textContent = text;
+            msg.className = `message ${type} show`;
+            setTimeout(() => msg.classList.remove('show'), 3000);
+        }
+        
+        function showPasswordMessage(text, type) {
+            showMessage(text, type, 'passwordMessage');
+        }
+        
+        async function changePassword() {
+            const oldPassword = document.getElementById('oldPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (!oldPassword || !newPassword || !confirmPassword) {
+                showPasswordMessage('Vui lòng nhập đầy đủ thông tin', 'error');
+                return;
+            }
+            
+            if (newPassword !== confirmPassword) {
+                showPasswordMessage('Mật khẩu mới không khớp', 'error');
+                return;
+            }
+            
+            if (newPassword.length < 6) {
+                showPasswordMessage('Mật khẩu phải có ít nhất 6 ký tự', 'error');
+                return;
+            }
+            
+            const user = JSON.parse(sessionStorage.getItem('user') || '{}');
+            
+            if (oldPassword !== user.password) {
+                showPasswordMessage('Mật khẩu hiện tại không đúng', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/change-password`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: user.id,
+                        newPassword: newPassword
+                    })
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    showPasswordMessage('Đổi mật khẩu thành công!', 'success');
+                    user.password = newPassword;
+                    sessionStorage.setItem('user', JSON.stringify(user));
+                    document.getElementById('oldPassword').value = '';
+                    document.getElementById('newPassword').value = '';
+                    document.getElementById('confirmPassword').value = '';
+                } else {
+                    showPasswordMessage(result.message, 'error');
+                }
+            } catch (e) {
+                showPasswordMessage('Lỗi kết nối server', 'error');
+            }
+        }
+        
+        async function changeEmail() {
+            const newEmail = document.getElementById('newEmail').value;
+            const password = document.getElementById('emailConfirmPassword').value;
+            
+            if (!newEmail || !password) {
+                showMessage('Vui lòng nhập đầy đủ thông tin', 'error', 'emailMessage');
+                return;
+            }
+            
+            if (!newEmail.includes('@')) {
+                showMessage('Email không hợp lệ', 'error', 'emailMessage');
+                return;
+            }
+            
+            const user = JSON.parse(sessionStorage.getItem('user') || '{}');
+            
+            if (password !== user.password) {
+                showMessage('Mật khẩu không đúng', 'error', 'emailMessage');
+                return;
+            }
+            
+            showMessage('Chức năng đổi email đang được phát triển', 'error', 'emailMessage');
+        }
+        
+        function uploadAvatar(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    uploadedImage = e.target.result;
+                    localStorage.setItem('avatarImage', uploadedImage);
+                    const preview = document.getElementById('avatarPreview');
+                    preview.style.background = 'none';
+                    preview.innerHTML = `<img src="${uploadedImage}" alt="Avatar">`;
+                    showPasswordMessage('Đã tải ảnh lên, nhấn Lưu để lưu!', 'success');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        function saveAvatar() {
+            if (uploadedImage) {
+                localStorage.setItem('avatarImage', uploadedImage);
+            }
+            showPasswordMessage('Lưu avatar thành công!', 'success');
+        }
+        
+        loadStats();
+    </script>
+</body>
+</html>

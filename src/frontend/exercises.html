@@ -1,0 +1,1125 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Luyện tập - SmartLearn</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      .page-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 24px;
+        padding: 40px;
+        color: white;
+        margin-bottom: 32px;
+      }
+      .page-header h1 {
+        font-size: 2rem;
+        margin-bottom: 8px;
+      }
+      .page-header p {
+        opacity: 0.9;
+      }
+
+      .subject-tabs {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+      }
+      .subject-tab {
+        padding: 12px 24px;
+        background: white;
+        border: 2px solid #e5e7eb;
+        border-radius: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .subject-tab:hover {
+        border-color: #4f46e5;
+      }
+      .subject-tab.active {
+        background: #4f46e5;
+        color: white;
+        border-color: #4f46e5;
+      }
+
+      .lesson-card {
+        background: white;
+        border-radius: 16px;
+        padding: 20px 24px;
+        margin-bottom: 16px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+        transition: all 0.3s;
+        border-left: 4px solid #4f46e5;
+      }
+      .lesson-card:hover {
+        transform: translateX(4px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+      .lesson-number {
+        color: #4f46e5;
+        font-weight: 600;
+        font-size: 0.85rem;
+        margin-bottom: 8px;
+      }
+      .lesson-title {
+        font-weight: 600;
+        font-size: 1.1rem;
+        margin-bottom: 8px;
+        color: #1f2937;
+      }
+      .lesson-concept {
+        color: #6b7280;
+        font-size: 0.9rem;
+        line-height: 1.5;
+      }
+      .lesson-example {
+        background: #f3f4f6;
+        padding: 12px 16px;
+        border-radius: 8px;
+        margin-top: 12px;
+        font-family: monospace;
+        font-size: 0.9rem;
+        color: #059669;
+      }
+      .lesson-result {
+        background: #d1fae5;
+        padding: 8px 12px;
+        border-radius: 6px;
+        margin-top: 8px;
+        font-size: 0.85rem;
+        color: #065f46;
+      }
+      .lessons-container {
+        display: none;
+      }
+      .lessons-container.active {
+        display: block;
+      }
+
+      .quiz-container {
+        display: none;
+      }
+      .quiz-container.active {
+        display: block;
+      }
+
+      .question-card {
+        background: white;
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 20px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+      .question-number {
+        color: #4f46e5;
+        font-weight: 600;
+        margin-bottom: 12px;
+      }
+      .question-text {
+        font-size: 1.1rem;
+        font-weight: 500;
+        margin-bottom: 20px;
+      }
+
+      .answers-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+      .answer-btn {
+        padding: 16px 20px;
+        background: #f9fafb;
+        border: 2px solid #e5e7eb;
+        border-radius: 12px;
+        text-align: left;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .answer-btn:hover:not(:disabled) {
+        border-color: #4f46e5;
+        background: #eef2ff;
+      }
+      .answer-btn:disabled {
+        cursor: not-allowed;
+      }
+      .answer-btn.selected {
+        border-color: #4f46e5;
+        background: #eef2ff;
+      }
+      .answer-btn.correct {
+        background: #d1fae5;
+        border-color: #059669;
+        color: #065f46;
+      }
+      .answer-btn.wrong {
+        background: #fee2e2;
+        border-color: #dc2626;
+        color: #991b1b;
+      }
+      .answer-btn .letter {
+        width: 28px;
+        height: 28px;
+        background: #e5e7eb;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 0.85rem;
+      }
+      .answer-btn.correct .letter {
+        background: #059669;
+        color: white;
+      }
+      .answer-btn.wrong .letter {
+        background: #dc2626;
+        color: white;
+      }
+
+      .quiz-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 24px;
+        padding: 20px;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+      .quiz-info {
+        font-size: 1rem;
+        color: #6b7280;
+      }
+      .quiz-info strong {
+        color: #4f46e5;
+      }
+
+      .btn-start {
+        padding: 14px 32px;
+        background: #4f46e5;
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 1rem;
+      }
+      .btn-start:hover {
+        background: #4338ca;
+      }
+      .btn-submit {
+        padding: 14px 32px;
+        background: #10b981;
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 1rem;
+      }
+      .btn-submit:hover {
+        background: #059669;
+      }
+
+      .result-popup {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 32px 48px;
+        border-radius: 16px;
+        font-size: 1.2rem;
+        font-weight: 600;
+        z-index: 1000;
+        display: none;
+        animation: popIn 0.3s ease;
+        text-align: center;
+      }
+      .result-popup.show {
+        display: block;
+      }
+      .result-popup.success {
+        background: #d1fae5;
+        color: #065f46;
+        border: 2px solid #059669;
+      }
+      .result-popup.fail {
+        background: #fee2e2;
+        color: #991b1b;
+        border: 2px solid #dc2626;
+      }
+      .result-popup .score {
+        font-size: 2.5rem;
+        margin: 12px 0;
+      }
+      @keyframes popIn {
+        from {
+          transform: translate(-50%, -50%) scale(0.8);
+          opacity: 0;
+        }
+        to {
+          transform: translate(-50%, -50%) scale(1);
+          opacity: 1;
+        }
+      }
+      .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.3);
+        z-index: 999;
+        display: none;
+      }
+      .overlay.show {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="navbar">
+      <div class="nav-brand">
+        <i class="fas fa-graduation-cap"></i>
+        <span>SmartLearn</span>
+      </div>
+      <nav class="nav-menu">
+        <a href="index.html" class="nav-link">
+          <i class="fas fa-home"></i>
+          <span>Trang chủ</span>
+        </a>
+        <a href="exercises.html" class="nav-link active">
+          <i class="fas fa-pencil-alt"></i>
+          <span>Luyện tập</span>
+        </a>
+        <a href="scores.html" class="nav-link">
+          <i class="fas fa-chart-line"></i>
+          <span>Điểm số</span>
+        </a>
+        <a href="history.html" class="nav-link">
+          <i class="fas fa-history"></i>
+          <span>Lịch sử</span>
+        </a>
+        <a href="profile.html" class="nav-link">
+          <i class="fas fa-user"></i>
+          <span>Hồ sơ</span>
+        </a>
+      </nav>
+      <div class="nav-user" id="navUser">
+        <div class="user-avatar"><i class="fas fa-user"></i></div>
+        <span class="user-name" id="userName">Người dùng</span>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <div class="page-header">
+        <h1>Luyện tập</h1>
+        <p>Chọn môn học, làm bài và nộp để lưu kết quả</p>
+      </div>
+
+      <div class="subject-tabs">
+        <button class="subject-tab" data-subject="python">
+          <i class="fab fa-python"></i> Python
+        </button>
+        <button class="subject-tab" data-subject="javascript">
+          <i class="fab fa-js"></i> JavaScript
+        </button>
+        <button class="subject-tab" data-subject="math">
+          <i class="fas fa-calculator"></i> Toán
+        </button>
+        <button class="subject-tab" data-subject="english">
+          <i class="fas fa-language"></i> Tiếng Anh
+        </button>
+      </div>
+
+      <div id="lessons-area" style="display: none">
+        <button
+          class="btn-start"
+          onclick="startQuiz()"
+          style="margin-bottom: 20px"
+        >
+          <i class="fas fa-play"></i> Bắt đầu làm bài
+        </button>
+        <div id="lessons-container"></div>
+      </div>
+
+      <div id="quiz-area" style="display: none">
+        <div class="quiz-actions">
+          <div class="quiz-info">
+            Đã trả lời: <strong id="answeredCount">0</strong>/10 câu
+          </div>
+          <button class="btn-submit" onclick="submitQuiz()">Nộp bài</button>
+        </div>
+        <br />
+        <div id="questions-container"></div>
+      </div>
+
+      <div id="start-area">
+        <div
+          style="
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 16px;
+          "
+        >
+          <i
+            class="fas fa-hand-pointer"
+            style="font-size: 3rem; color: #4f46e5; margin-bottom: 20px"
+          ></i>
+          <h2 style="margin-bottom: 12px; color: #1f2937">
+            Chọn môn học để bắt đầu
+          </h2>
+          <p style="color: #6b7280">Mỗi môn có 10 câu hỏi, mỗi câu 1 điểm</p>
+        </div>
+      </div>
+    </main>
+
+    <div class="overlay" id="overlay"></div>
+    <div class="result-popup" id="resultPopup"></div>
+
+    <script src="js/main.js"></script>
+    <script>
+      let currentSubject = "";
+      let userAnswers = {};
+      let quizStarted = false;
+
+      const defaultQuestions = {
+        python: [
+          {
+            q: "Biến trong Python được khai báo bằng từ khóa nào?",
+            a: ["var", "let", "Không cần khai báo", "define"],
+            correct: 2,
+          },
+          {
+            q: "Hàm print() trong Python dùng để làm gì?",
+            a: ["Khai báo biến", "In ra màn hình", "Tính toán", "Tạo vòng lặp"],
+            correct: 1,
+          },
+          {
+            q: "Cách khai báo list trong Python là?",
+            a: ["list = {}", "list = ()", "list = []", "list = <>"],
+            correct: 2,
+          },
+          {
+            q: "Toán tử lũy thừa trong Python là?",
+            a: ["**", "^^", "^", "pow"],
+            correct: 0,
+          },
+          {
+            q: "Hàm len() trong Python dùng để?",
+            a: ["Tính tổng", "Đếm phần tử", "Sắp xếp", "Tìm kiếm"],
+            correct: 1,
+          },
+          {
+            q: "Cách comment một dòng trong Python?",
+            a: ["//", "/* */", "#", "<!-- -->"],
+            correct: 2,
+          },
+          {
+            q: "Kiểu dữ liệu nào là số nguyên trong Python?",
+            a: ["float", "int", "str", "bool"],
+            correct: 1,
+          },
+          {
+            q: "Từ khóa để tạo hàm trong Python?",
+            a: ["function", "def", "func", "create"],
+            correct: 1,
+          },
+          {
+            q: "Cách import module trong Python?",
+            a: ["import module", "#include", "require", "using"],
+            correct: 0,
+          },
+          {
+            q: "Vòng lặp for trong Python có cú pháp?",
+            a: [
+              "for i in range(n)",
+              "for (i=0; i<n; i++)",
+              "for i in n",
+              "loop i to n",
+            ],
+            correct: 0,
+          },
+        ],
+        javascript: [
+          {
+            q: "Cách khai báo biến trong JavaScript ES6?",
+            a: ["var", "let và const", "int", "define"],
+            correct: 1,
+          },
+          {
+            q: "Hàm console.log() dùng để?",
+            a: ["Tạo hộp thoại", "In ra console", "Tính toán", "Khai báo hàm"],
+            correct: 1,
+          },
+          {
+            q: "Kiểu dữ liệu nào là số trong JS?",
+            a: ["string", "number", "boolean", "array"],
+            correct: 1,
+          },
+          {
+            q: "Cách tạo mảng trong JavaScript?",
+            a: ["arr = {}", "arr = ()", "arr = []", "arr = <>"],
+            correct: 2,
+          },
+          {
+            q: "Toán tử so sánh bằng trong JS?",
+            a: ["=", "==", "===", "both B and C"],
+            correct: 3,
+          },
+          {
+            q: "Hàm setTimeout() dùng để?",
+            a: [
+              "Lặp vô hạn",
+              "Chạy sau một thời gian",
+              "Dừng chương trình",
+              "Tính toán",
+            ],
+            correct: 1,
+          },
+          {
+            q: "Cách viết hàm arrow function?",
+            a: ["function =>", "() => {}", "-> function", "arrow()"],
+            correct: 1,
+          },
+          {
+            q: "Event click trong JS viết là?",
+            a: ["onClick", "onclick", "click", "eventClick"],
+            correct: 1,
+          },
+          {
+            q: "Cách thêm phần tử vào mảng?",
+            a: ["push()", "add()", "append()", "insert()"],
+            correct: 0,
+          },
+          {
+            q: "Từ khóa khai báo hằng số?",
+            a: ["var", "let", "const", "static"],
+            correct: 2,
+          },
+        ],
+        math: [
+          { q: "Đạo hàm của x² là?", a: ["x", "2x", "x²", "2"], correct: 1 },
+          {
+            q: "Tích phân của 2x là?",
+            a: ["x²", "2x²", "x² + C", "2x + C"],
+            correct: 2,
+          },
+          { q: "Sin(90°) bằng?", a: ["0", "1", "0.5", "√3"], correct: 1 },
+          { q: "Log10(100) bằng?", a: ["1", "2", "10", "100"], correct: 1 },
+          {
+            q: "Đạo hàm của sin(x) là?",
+            a: ["sin(x)", "cos(x)", "-sin(x)", "-cos(x)"],
+            correct: 1,
+          },
+          {
+            q: "Tam giác vuông có cạnh 3,4 thì cạnh huyền?",
+            a: ["5", "6", "7", "8"],
+            correct: 0,
+          },
+          {
+            q: "Đạo hàm của e^x là?",
+            a: ["e^x", "xe^x", "e^(x+1)", "e"],
+            correct: 0,
+          },
+          {
+            q: "Tổng các góc trong tam giác?",
+            a: ["90°", "180°", "360°", "270°"],
+            correct: 1,
+          },
+          {
+            q: "Giá trị của π (pi) xấp xỉ?",
+            a: ["2.14", "3.14", "4.14", "5.14"],
+            correct: 1,
+          },
+          { q: "Căn bậc 2 của 144?", a: ["10", "11", "12", "13"], correct: 2 },
+        ],
+        english: [
+          {
+            q: "She ___ a student.",
+            a: ["is", "are", "be", "been"],
+            correct: 0,
+          },
+          {
+            q: "What ___ your name?",
+            a: ["is", "are", "am", "be"],
+            correct: 0,
+          },
+          {
+            q: "I ___ to the gym yesterday.",
+            a: ["go", "went", "going", "gone"],
+            correct: 1,
+          },
+          {
+            q: "He ___ playing football now.",
+            a: ["is", "are", "am", "was"],
+            correct: 0,
+          },
+          {
+            q: "This book is ___ than that one.",
+            a: ["good", "better", "best", "more good"],
+            correct: 1,
+          },
+          {
+            q: "She ___ English very well.",
+            a: ["speaks", "speak", "speaking", "spoke"],
+            correct: 0,
+          },
+          {
+            q: "___ you like coffee?",
+            a: ["Do", "Does", "Did", "Is"],
+            correct: 0,
+          },
+          { q: "I have ___ apple.", a: ["a", "an", "the", "some"], correct: 1 },
+          {
+            q: "They ___ in Paris.",
+            a: ["live", "lives", "living", "lived"],
+            correct: 0,
+          },
+          {
+            q: "She is the ___ student in class.",
+            a: ["smart", "smarter", "smartest", "most smart"],
+            correct: 2,
+          },
+        ],
+      };
+
+      const subjectNames = {
+        python: "Python",
+        javascript: "JavaScript",
+        math: "Toán",
+        english: "Tiếng Anh",
+      };
+
+      const lessons = {
+        python: [
+          {
+            number: 1,
+            title: "Biến trong Python",
+            concept:
+              "Biến dùng để lưu trữ dữ liệu trong chương trình. Python không cần khai báo kiểu dữ liệu khi tạo biến.",
+            example: 'x = 10\nname = "An"',
+            result: "Python tự hiểu x là số nguyên, name là chuỗi.",
+          },
+          {
+            number: 2,
+            title: "Hàm print()",
+            concept:
+              "Hàm dùng để in dữ liệu ra màn hình. Tác dụng: Hiển thị thông tin cho người dùng.",
+            example: 'print("Hello World")',
+            result: "Hello World",
+          },
+          {
+            number: 3,
+            title: "List trong Python",
+            concept:
+              "List là kiểu dữ liệu dùng để lưu nhiều giá trị trong một biến. Sử dụng dấu ngoặc vuông [].",
+            example: "numbers = [1, 2, 3]",
+            result: "Tạo danh sách gồm 3 phần tử.",
+          },
+          {
+            number: 4,
+            title: "Toán tử lũy thừa **",
+            concept: "Dùng để tính lũy thừa.",
+            example: "2 ** 3",
+            result: "8",
+          },
+          {
+            number: 5,
+            title: "Hàm len()",
+            concept: "Dùng để đếm số phần tử trong list hoặc chuỗi.",
+            example: "len([1, 2, 3])",
+            result: "3",
+          },
+          {
+            number: 6,
+            title: "Comment trong Python",
+            concept:
+              "Dùng để ghi chú trong code, không ảnh hưởng đến chương trình. Sử dụng dấu #",
+            example: "# Đây là comment",
+            result: "Không in ra màn hình",
+          },
+          {
+            number: 7,
+            title: "Kiểu dữ liệu int",
+            concept: "Là kiểu số nguyên.",
+            example: "x = 10",
+            result: "x có kiểu int",
+          },
+          {
+            number: 8,
+            title: "Hàm trong Python (def)",
+            concept: "Dùng để định nghĩa một hàm.",
+            example: 'def hello():\n    print("Hi")',
+            result: "Tạo hàm hello",
+          },
+          {
+            number: 9,
+            title: "Import module",
+            concept: "Dùng để sử dụng thư viện có sẵn.",
+            example: "import math",
+            result: "Import thư viện math",
+          },
+          {
+            number: 10,
+            title: "Vòng lặp for",
+            concept: "Dùng để lặp lại một đoạn code nhiều lần.",
+            example: "for i in range(3):\n    print(i)",
+            result: "0\n1\n2",
+          },
+        ],
+        javascript: [
+          {
+            number: 1,
+            title: "Khai báo biến (let, const)",
+            concept:
+              "Dùng để lưu trữ dữ liệu. let: biến có thể thay đổi, const: hằng số.",
+            example: 'let name = "An";\nconst age = 20;',
+            result: "name có thể thay đổi, age là hằng",
+          },
+          {
+            number: 2,
+            title: "Hàm console.log()",
+            concept: "Dùng để in dữ liệu ra console.",
+            example: 'console.log("Hello");',
+            result: "Hello",
+          },
+          {
+            number: 3,
+            title: "Kiểu dữ liệu number",
+            concept: "Dùng để lưu số.",
+            example: "let x = 10;",
+            result: "x có kiểu number",
+          },
+          {
+            number: 4,
+            title: "Mảng (Array)",
+            concept: "Dùng để lưu nhiều giá trị.",
+            example: "let arr = [1, 2, 3];",
+            result: "Mảng gồm 3 phần tử",
+          },
+          {
+            number: 5,
+            title: "Toán tử == và ===",
+            concept: "==: so sánh giá trị. ===: so sánh cả giá trị và kiểu.",
+            example: '5 == "5"   // true\n5 === "5"  // false',
+            result: "true, false",
+          },
+          {
+            number: 6,
+            title: "Hàm setTimeout()",
+            concept: "Thực hiện sau một khoảng thời gian.",
+            example: 'setTimeout(() => {\n    console.log("Hello");\n}, 1000);',
+            result: "In Hello sau 1 giây",
+          },
+          {
+            number: 7,
+            title: "Arrow function",
+            concept: "Cách viết hàm ngắn gọn.",
+            example: "const sum = (a, b) => a + b;",
+            result: "sum(2, 3) = 5",
+          },
+          {
+            number: 8,
+            title: "Event onclick",
+            concept: "Xử lý sự kiện khi click.",
+            example: 'button.onclick = function() {\n    alert("Clicked");\n}',
+            result: "Hiện thông báo khi click",
+          },
+          {
+            number: 9,
+            title: "Hàm push()",
+            concept: "Thêm phần tử vào mảng.",
+            example: "let arr = [1, 2];\narr.push(3);",
+            result: "[1, 2, 3]",
+          },
+          {
+            number: 10,
+            title: "const",
+            concept: "Khai báo hằng số, không thể thay đổi.",
+            example: "const PI = 3.14;",
+            result: "PI = 3.14",
+          },
+        ],
+        math: [
+          {
+            number: 1,
+            title: "Đạo hàm của x²",
+            concept: "Công thức đạo hàm: x^n → n*x^(n-1)",
+            example: "x² → 2x",
+            result: "2x",
+          },
+          {
+            number: 2,
+            title: "Tích phân của 2x",
+            concept: "Tích phân là ngược của đạo hàm.",
+            example: "∫2x dx = x² + C",
+            result: "x² + C",
+          },
+          {
+            number: 3,
+            title: "sin(90°)",
+            concept: "Hàm sin trong tam giác vuông.",
+            example: "sin(90°) = 1",
+            result: "1",
+          },
+          {
+            number: 4,
+            title: "log10(100)",
+            concept: "Logarith cơ số 10.",
+            example: "log10(100) = log10(10²) = 2",
+            result: "2",
+          },
+          {
+            number: 5,
+            title: "Đạo hàm của sin(x)",
+            concept: "Đạo hàm của sin là cos.",
+            example: "sin(x) → cos(x)",
+            result: "cos(x)",
+          },
+          {
+            number: 6,
+            title: "Tam giác vuông (3,4,5)",
+            concept: "Định lý Pythagoras: a² + b² = c²",
+            example: "3² + 4² = 5² → 9 + 16 = 25",
+            result: "Cạnh huyền = 5",
+          },
+          {
+            number: 7,
+            title: "Đạo hàm e^x",
+            concept: "Hàm mũ e^x có đạo hàm là chính nó.",
+            example: "e^x → e^x",
+            result: "e^x",
+          },
+          {
+            number: 8,
+            title: "Tổng góc tam giác",
+            concept: "Tổng 3 góc trong tam giác bằng 180°.",
+            example: "∠A + ∠B + ∠C = 180°",
+            result: "180°",
+          },
+          {
+            number: 9,
+            title: "Giá trị π",
+            concept: "Hằng số pi bằng tỉ số chu vi/dường kính.",
+            example: "π ≈ 3.14159...",
+            result: "3.14",
+          },
+          {
+            number: 10,
+            title: "Căn bậc hai của 144",
+            concept: "Tìm số x sao cho x² = 144",
+            example: "√144 = 12",
+            result: "12",
+          },
+        ],
+        english: [
+          {
+            number: 1,
+            title: "Cấu trúc 'She is…'",
+            concept: "Công thức: S + is + danh từ",
+            example: "She is a student.",
+            result: "Câu khẳng định",
+          },
+          {
+            number: 2,
+            title: "Câu hỏi 'What is…?'",
+            concept: "What + is + làm câu hỏi về thông tin.",
+            example: "What is your name?",
+            result: "Tên bạn là gì?",
+          },
+          {
+            number: 3,
+            title: "Quá khứ đơn (went)",
+            concept: "Quá khứ đơn dùng cho hành động đã xong trong quá khứ.",
+            example: "I went to the gym yesterday.",
+            result: "Đã đi tập thể dục",
+          },
+          {
+            number: 4,
+            title: "Hiện tại tiếp diễn",
+            concept: "Công thức: S + is/are + V-ing",
+            example: "He is playing football.",
+            result: "Đang chơi bóng",
+          },
+          {
+            number: 5,
+            title: "So sánh hơn",
+            concept: "Thêm -er hoặc dùng more cho tính từ dài.",
+            example: "better, faster",
+            result: "Tốt hơn, nhanh hơn",
+          },
+          {
+            number: 6,
+            title: "Hiện tại đơn",
+            concept: "Dùng cho thói quen, sự thật.",
+            example: "She speaks English.",
+            result: "Cô ấy nói tiếng Anh",
+          },
+          {
+            number: 7,
+            title: "Câu hỏi với 'Do'",
+            concept: "Do + S + V? cho câu hỏi khẳng định.",
+            example: "Do you like coffee?",
+            result: "Bạn có thích cà phê không?",
+          },
+          {
+            number: 8,
+            title: "Mạo từ 'an'",
+            concept: "Dùng trước nguyên âm a, e, i, o, u.",
+            example: "an apple",
+            result: "Một quả táo",
+          },
+          {
+            number: 9,
+            title: "Hiện tại đơn (they)",
+            concept: "They + động từ nguyên thể.",
+            example: "They live in Paris.",
+            result: "Họ sống ở Paris",
+          },
+          {
+            number: 10,
+            title: "So sánh nhất",
+            concept: "Thêm -est hoặc dùng most.",
+            example: "the smartest",
+            result: "Thông minh nhất",
+          },
+        ],
+      };
+
+      function renderLessons(subject) {
+        const container = document.getElementById("lessons-container");
+        if (!lessons[subject]) {
+          container.innerHTML = "";
+          return;
+        }
+
+        container.innerHTML = lessons[subject]
+          .map(
+            (lesson) => `
+                <div class="lesson-card" onclick="toggleLesson(${lesson.number})">
+                    <div class="lesson-number">Bài ${lesson.number}</div>
+                    <div class="lesson-title">${lesson.title}</div>
+                    <div class="lesson-concept">${lesson.concept}</div>
+                    <div class="lesson-example">${lesson.example.replace(/\n/g, "<br>")}</div>
+                    <div class="lesson-result">${lesson.result}</div>
+                </div>
+            `,
+          )
+          .join("");
+      }
+
+      let quizQuestions = {};
+
+      async function loadQuestionsFromDB(subject) {
+        if (quizQuestions[subject]) return;
+
+        try {
+          const response = await fetch(`${API_URL}/questions/${subject}`);
+          const dbQuestions = await response.json();
+
+          if (dbQuestions.length > 0) {
+            quizQuestions[subject] = dbQuestions.map((q) => ({
+              q: q.question,
+              a: JSON.parse(q.answers),
+              correct: q.correct,
+            }));
+          } else {
+            quizQuestions[subject] = defaultQuestions[subject];
+          }
+        } catch (e) {
+          console.log("Lỗi tải câu hỏi từ DB, dùng mặc định");
+          quizQuestions[subject] = defaultQuestions[subject];
+        }
+      }
+
+      document.querySelectorAll(".subject-tab").forEach((tab) => {
+        tab.addEventListener("click", function () {
+          currentSubject = this.dataset.subject;
+          quizStarted = true;
+          userAnswers = {};
+
+          document
+            .querySelectorAll(".subject-tab")
+            .forEach((t) => t.classList.remove("active"));
+          this.classList.add("active");
+
+          document.getElementById("start-area").style.display = "none";
+
+          if (lessons[currentSubject]) {
+            document.getElementById("quiz-area").style.display = "none";
+            document.getElementById("lessons-area").style.display = "block";
+            renderLessons(currentSubject);
+          } else {
+            document.getElementById("lessons-area").style.display = "none";
+            document.getElementById("quiz-area").style.display = "block";
+            loadQuestionsFromDB(currentSubject).then(() => {
+              renderQuestions(currentSubject);
+              updateAnswerCount();
+            });
+          }
+        });
+      });
+
+      function startQuiz() {
+        document.getElementById("lessons-area").style.display = "none";
+        document.getElementById("quiz-area").style.display = "block";
+
+        loadQuestionsFromDB(currentSubject).then(() => {
+          renderQuestions(currentSubject);
+          updateAnswerCount();
+        });
+      }
+
+      function renderQuestions(subject) {
+        const container = document.getElementById("questions-container");
+        container.innerHTML = quizQuestions[subject]
+          .map(
+            (q, i) => `
+                <div class="question-card">
+                    <div class="question-number">Câu ${i + 1}</div>
+                    <div class="question-text">${q.q}</div>
+                    <div class="answers-grid">
+                        ${q.a
+                          .map(
+                            (a, j) => `
+                            <button class="answer-btn" data-question="${i}" data-answer="${j}" onclick="selectAnswer(this, ${i}, ${j})">
+                                <span class="letter">${String.fromCharCode(65 + j)}</span>
+                                <span>${a}</span>
+                            </button>
+                        `,
+                          )
+                          .join("")}
+                    </div>
+                </div>
+            `,
+          )
+          .join("");
+      }
+
+      function selectAnswer(btn, questionIndex, answerIndex) {
+        const questionBtns = document.querySelectorAll(
+          `.answer-btn[data-question="${questionIndex}"]`,
+        );
+        questionBtns.forEach((b) => b.classList.remove("selected"));
+        btn.classList.add("selected");
+
+        userAnswers[questionIndex] = answerIndex;
+        updateAnswerCount();
+      }
+
+      function updateAnswerCount() {
+        document.getElementById("answeredCount").textContent =
+          Object.keys(userAnswers).length;
+      }
+
+      async function submitQuiz() {
+        const answeredCount = Object.keys(userAnswers).length;
+        if (answeredCount < 10) {
+          alert(`Bạn cần trả lời đủ 10 câu! (Đã trả lời: ${answeredCount}/10)`);
+          return;
+        }
+
+        let score = 0;
+        const answers = [];
+
+        quizQuestions[currentSubject].forEach((q, i) => {
+          const isCorrect = userAnswers[i] === q.correct;
+          if (isCorrect) score++;
+          answers.push({
+            question: i,
+            selected: userAnswers[i],
+            correct: q.correct,
+            isCorrect: isCorrect,
+          });
+
+          const questionBtns = document.querySelectorAll(
+            `.answer-btn[data-question="${i}"]`,
+          );
+          questionBtns.forEach((b) => {
+            b.disabled = true;
+            const answerIndex = parseInt(b.dataset.answer);
+            if (answerIndex === q.correct) {
+              b.classList.add("correct");
+            } else if (answerIndex === userAnswers[i] && !isCorrect) {
+              b.classList.add("wrong");
+            }
+          });
+        });
+
+        const popup = document.getElementById("resultPopup");
+        const overlay = document.getElementById("overlay");
+
+        if (score >= 5) {
+          popup.className = "result-popup success";
+          popup.innerHTML = `<i class="fas fa-trophy"></i><div class="score">${score}/10</div>Chúc mừng! Bạn đã đạt ${score} điểm`;
+        } else {
+          popup.className = "result-popup fail";
+          popup.innerHTML = `<i class="fas fa-times-circle"></i><div class="score">${score}/10</div>Chưa đạt! Cần cố gắng hơn`;
+        }
+
+        overlay.classList.add("show");
+        popup.classList.add("show");
+
+        const user = JSON.parse(sessionStorage.getItem("user") || "{}");
+        const userId = user.id;
+
+        if (!userId) {
+          alert("Vui lòng đăng nhập để lưu kết quả!");
+          return;
+        }
+
+        try {
+          const response = await fetch(`${API_URL}/save-result`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              userId: userId,
+              subject: subjectNames[currentSubject],
+              score: score,
+              total: 10,
+              answers: answers,
+            }),
+          });
+          const result = await response.json();
+          if (!result.success) {
+            alert("Lỗi: " + result.message);
+          }
+        } catch (e) {
+          console.error("Lỗi kết nối:", e);
+          alert(
+            "Không thể kết nối server. Vui lòng chạy server: python server.py",
+          );
+        }
+
+        setTimeout(() => {
+          overlay.classList.remove("show");
+          popup.classList.remove("show");
+        }, 3000);
+      }
+    </script>
+    <script src="js/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký - SmartLearn</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .register-page {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .register-card {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            animation: slideUp 0.5s ease-out;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .register-logo {
+            width: 72px;
+            height: 72px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+        .register-logo i { font-size: 2rem; color: white; }
+        .register-title { text-align: center; margin-bottom: 4px; font-size: 1.75rem; font-weight: 700; color: #1f2937; }
+        .register-subtitle { text-align: center; color: #6b7280; margin-bottom: 24px; }
+        .register-form .form-group { margin-bottom: 16px; }
+        .register-form label { display: block; font-size: 0.9rem; font-weight: 500; color: #374151; margin-bottom: 6px; }
+        .register-form .input-wrapper { position: relative; }
+        .register-form .input-wrapper i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #9ca3af; }
+        .register-form input {
+            width: 100%;
+            padding: 12px 14px 12px 44px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            box-sizing: border-box;
+        }
+        .register-form input:focus { outline: none; border-color: #4f46e5; box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); }
+        .register-form .toggle-password {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #9ca3af;
+            padding: 4px;
+        }
+        .register-form .toggle-password:hover { color: #4f46e5; }
+        
+        .admin-toggle {
+            display: flex;
+            gap: 0;
+            margin-bottom: 16px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid #e5e7eb;
+        }
+        .admin-toggle button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: #f9fafb;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #6b7280;
+            transition: all 0.3s;
+        }
+        .admin-toggle button.active {
+            background: #4f46e5;
+            color: white;
+        }
+        .admin-toggle button:first-child { border-right: 1px solid #e5e7eb; }
+        
+        .admin-code-group {
+            display: none;
+            margin-bottom: 16px;
+            padding: 14px;
+            background: #fef3c7;
+            border-radius: 10px;
+            border: 1px solid #fcd34d;
+        }
+        .admin-code-group.show { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .admin-code-group label { font-size: 0.85rem; font-weight: 500; color: #92400e; display: block; margin-bottom: 8px; }
+        .admin-code-group .input-wrapper input { padding-left: 14px; background: white; }
+        
+        .btn-register {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 8px;
+        }
+        .btn-register:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3); }
+        
+        .register-footer { text-align: center; margin-top: 20px; color: #6b7280; }
+        .register-footer a { color: #4f46e5; text-decoration: none; font-weight: 600; }
+        .register-footer a:hover { text-decoration: underline; }
+        .register-back { text-align: center; margin-top: 14px; }
+        .register-back a { display: inline-flex; align-items: center; gap: 6px; color: #9ca3af; text-decoration: none; font-size: 0.9rem; }
+        .register-back a:hover { color: #4f46e5; }
+    </style>
+</head>
+<body>
+    <div class="register-page">
+        <div class="register-card">
+            <div class="register-logo"><i class="fas fa-user-plus"></i></div>
+            <h1 class="register-title">Tạo tài khoản</h1>
+            <p class="register-subtitle">Đăng ký để bắt đầu học tập</p>
+            
+            <form id="registerForm" class="register-form">
+                <div class="admin-toggle">
+                    <button type="button" class="active" id="userBtn">Người dùng</button>
+                    <button type="button" id="adminBtn">Admin</button>
+                </div>
+                
+                <div class="admin-code-group" id="adminCodeGroup">
+                    <label>Mã admin (bắt buộc để tạo tài khoản admin)</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="adminCode" placeholder="Nhập mã admin (123)">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="fullname">Họ và tên</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="fullname" placeholder="Nhập họ và tên" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="email" placeholder="Nhập email của bạn" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Mật khẩu</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" placeholder="Tạo mật khẩu (ít nhất 6 ký tự)" required>
+                        <button type="button" class="toggle-password" onclick="togglePassword(this)">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirmPassword">Xác nhận mật khẩu</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="confirmPassword" placeholder="Nhập lại mật khẩu" required>
+                        <button type="button" class="toggle-password" onclick="togglePassword(this)">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn-register">Đăng ký</button>
+            </form>
+            
+            <div class="register-footer">
+                Đã có tài khoản? <a href="login.html">Đăng nhập ngay</a>
+            </div>
+            
+            <div class="register-back">
+                <a href="index.html"><i class="fas fa-arrow-left"></i> Về trang chủ</a>
+            </div>
+        </div>
+    </div>
+    
+    <div id="message" class="message"></div>
+    <script src="js/auth.js"></script>
+</body>
+</html>

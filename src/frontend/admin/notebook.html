@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phân tích dữ liệu - Admin</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .dashboard {
+            min-height: 100vh;
+            background: #f3f4f6;
+        }
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            height: 100vh;
+            background: linear-gradient(180deg, #4f46e5 0%, #4338ca 100%);
+            padding: 24px;
+            color: white;
+        }
+        .sidebar h2 {
+            font-size: 1.5rem;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .sidebar nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            transition: all 0.3s;
+        }
+        .sidebar nav a:hover, .sidebar nav a.active {
+            background: rgba(255,255,255,0.15);
+            color: white;
+        }
+        .sidebar .logout {
+            position: absolute;
+            bottom: 24px;
+            left: 24px;
+            right: 24px;
+        }
+        .sidebar .logout a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s;
+            background: rgba(239,68,68,0.2);
+        }
+        .sidebar .logout a:hover {
+            background: rgba(239,68,68,0.4);
+            color: white;
+        }
+        .main {
+            margin-left: 260px;
+            padding: 32px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+        .header h1 {
+            font-size: 1.75rem;
+            color: #1f2937;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 16px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .user-info .avatar {
+            width: 40px;
+            height: 40px;
+            background: #4f46e5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+        .stat-card {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .stat-card .icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin: 0 auto 16px;
+        }
+        .stat-card .icon.blue { background: #dbeafe; color: #2563eb; }
+        .stat-card .icon.green { background: #d1fae5; color: #059669; }
+        .stat-card .icon.purple { background: #ede9fe; color: #7c3aed; }
+        .stat-card .icon.orange { background: #fed7aa; color: #ea580c; }
+        .stat-card h3 { font-size: 2rem; color: #1f2937; margin-bottom: 4px; }
+        .stat-card p { color: #6b7280; font-size: 0.9rem; }
+        .charts-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+        .chart-card {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .chart-card h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #1f2937;
+        }
+        .subject-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .subject-bar .name {
+            width: 100px;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        .subject-bar .bar {
+            flex: 1;
+            height: 24px;
+            background: #f3f4f6;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .subject-bar .bar-fill {
+            height: 100%;
+            background: #4f46e5;
+            border-radius: 6px;
+            transition: width 0.5s ease;
+        }
+        .subject-bar .count {
+            width: 40px;
+            text-align: right;
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        .pass-rate-chart {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            padding: 20px 0;
+        }
+        .pass-ring {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        .pass-ring.success { background: #d1fae5; color: #059669; }
+        .pass-ring.fail { background: #fee2e2; color: #dc2626; }
+        .pass-legend {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .pass-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+        }
+        .pass-legend-item .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        .pass-legend-item .dot.green { background: #059669; }
+        .pass-legend-item .dot.red { background: #dc2626; }
+        .table-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 32px;
+        }
+        .table-card h3 {
+            padding: 20px 24px;
+            font-size: 1.1rem;
+            color: #1f2937;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 16px 24px; text-align: left; }
+        th { background: #f9fafb; font-weight: 600; color: #6b7280; font-size: 0.85rem; text-transform: uppercase; }
+        td { color: #1f2937; border-bottom: 1px solid #e5e7eb; }
+        tr:last-child td { border-bottom: none; }
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        .badge.python { background: #dbeafe; color: #2563eb; }
+        .badge.js { background: #fef3c7; color: #d97706; }
+        .badge.math { background: #d1fae5; color: #059669; }
+        .badge.english { background: #ede9fe; color: #7c3aed; }
+        .btn-refresh {
+            padding: 10px 20px;
+            background: #4f46e5;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-refresh:hover { background: #4338ca; }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <aside class="sidebar">
+            <h2><i class="fas fa-shield-alt"></i> Admin Panel</h2>
+            <nav>
+                <a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a>
+                <a href="questions.html"><i class="fas fa-question-circle"></i> Quản lý câu hỏi</a>
+                <a href="notebook.html" class="active"><i class="fas fa-chart-bar"></i> Phân tích dữ liệu</a>
+            </nav>
+            <div class="logout">
+                <a href="../login.html" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
+            </div>
+        </aside>
+        
+        <main class="main">
+            <div class="header">
+                <h1>Phân tích dữ liệu</h1>
+                <div class="user-info">
+                    <div class="avatar" id="adminAvatar">A</div>
+                    <div>
+                        <strong id="adminName">Admin</strong>
+                        <div style="font-size: 0.8rem; color: #6b7280;">Quản trị viên</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="icon blue"><i class="fas fa-users"></i></div>
+                    <h3 id="totalUsers">-</h3>
+                    <p>Tổng người dùng</p>
+                </div>
+                <div class="stat-card">
+                    <div class="icon green"><i class="fas fa-clipboard-check"></i></div>
+                    <h3 id="totalExams">-</h3>
+                    <p>Tổng bài làm</p>
+                </div>
+                <div class="stat-card">
+                    <div class="icon purple"><i class="fas fa-question-circle"></i></div>
+                    <h3 id="totalQuestions">-</h3>
+                    <p>Tổng câu hỏi</p>
+                </div>
+                <div class="stat-card">
+                    <div class="icon orange"><i class="fas fa-percentage"></i></div>
+                    <h3 id="avgScore">-</h3>
+                    <p>Điểm TB</p>
+                </div>
+            </div>
+
+            <div class="charts-row">
+                <div class="chart-card">
+                    <h3>Câu hỏi theo môn</h3>
+                    <div id="subjectChart"></div>
+                </div>
+                <div class="chart-card">
+                    <h3>Tỉ lệ đạt/bài thi</h3>
+                    <div class="pass-rate-chart">
+                        <div class="pass-ring success" id="passRing">-</div>
+                        <div class="pass-legend">
+                            <div class="pass-legend-item">
+                                <span class="dot green"></span>
+                                <span>Đạt (>=5 điểm)</span>
+                                <strong id="passCount">0</strong>
+                            </div>
+                            <div class="pass-legend-item">
+                                <span class="dot red"></span>
+                                <span>Không đạt</span>
+                                <strong id="failCount">0</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid #e5e7eb;">
+                    <h3 style="margin: 0; padding: 0; border: none;">Điểm trung bình theo môn</h3>
+                    <button class="btn-refresh" onclick="loadData()">
+                        <i class="fas fa-sync-alt"></i> Làm mới
+                    </button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Môn học</th>
+                            <th>Số lần làm</th>
+                            <th>Điểm TB</th>
+                            <th>Điểm thấp nhất</th>
+                            <th>Điểm cao nhất</th>
+                        </tr>
+                    </thead>
+                    <tbody id="subjectTable"></tbody>
+                </table>
+            </div>
+
+            <div class="table-card">
+                <h3>Top 10 người dùng có điểm cao nhất</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Họ tên</th>
+                            <th>Email</th>
+                            <th>Điểm TB</th>
+                            <th>Số bài đã làm</th>
+                        </tr>
+                    </thead>
+                    <tbody id="topUsersTable"></tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+        
+        function logout() {
+            if (confirm('Bạn có muốn đăng xuất?')) {
+                sessionStorage.removeItem('user');
+            }
+        }
+
+        async function loadData() {
+            try {
+                const [usersRes, historyRes, questionsRes] = await Promise.all([
+                    fetch(`${API_URL}/all-users`),
+                    fetch(`${API_URL}/all-history`),
+                    fetch(`${API_URL}/all-questions`)
+                ]);
+
+                const users = await usersRes.json();
+                const history = await historyRes.json();
+                const questions = await questionsRes.json();
+
+                document.getElementById('totalUsers').textContent = users.length;
+                document.getElementById('totalExams').textContent = history.length;
+                document.getElementById('totalQuestions').textContent = questions.length;
+
+                const avgScore = history.length > 0 
+                    ? (history.reduce((sum, h) => sum + h.score, 0) / history.length).toFixed(1)
+                    : 0;
+                document.getElementById('avgScore').textContent = avgScore;
+
+                const subjectCounts = {};
+                questions.forEach(q => {
+                    subjectCounts[q.subject] = (subjectCounts[q.subject] || 0) + 1;
+                });
+
+                const subjectChart = document.getElementById('subjectChart');
+                const subjectOrder = ['python', 'javascript', 'math', 'english'];
+                const subjectNames = { python: 'Python', javascript: 'JS', math: 'Toán', english: 'Tiếng Anh' };
+                const maxCount = Math.max(...Object.values(subjectCounts), 1);
+
+                subjectChart.innerHTML = subjectOrder.map(s => {
+                    const count = subjectCounts[s] || 0;
+                    const percent = (count / maxCount) * 100;
+                    return `
+                        <div class="subject-bar">
+                            <div class="name">${subjectNames[s]}</div>
+                            <div class="bar">
+                                <div class="bar-fill" style="width: ${percent}%"></div>
+                            </div>
+                            <div class="count">${count}</div>
+                        </div>
+                    `;
+                }).join('');
+
+                const passed = history.filter(h => h.score >= 5).length;
+                const failed = history.length - passed;
+                const passPercent = history.length > 0 ? Math.round((passed / history.length) * 100) : 0;
+
+                document.getElementById('passRing').textContent = passPercent + '%';
+                document.getElementById('passCount').textContent = passed;
+                document.getElementById('failCount').textContent = failed;
+
+                const subjectStats = {};
+                history.forEach(h => {
+                    if (!subjectStats[h.subject]) {
+                        subjectStats[h.subject] = { sum: 0, min: 11, max: 0, count: 0 };
+                    }
+                    subjectStats[h.subject].sum += h.score;
+                    subjectStats[h.subject].min = Math.min(subjectStats[h.subject].min, h.score);
+                    subjectStats[h.subject].max = Math.max(subjectStats[h.subject].max, h.score);
+                    subjectStats[h.subject].count++;
+                });
+
+                const subjectTable = document.getElementById('subjectTable');
+                subjectTable.innerHTML = Object.entries(subjectStats).map(([subject, stats]) => `
+                    <tr>
+                        <td><span class="badge ${subject}">${subjectNames[subject] || subject}</span></td>
+                        <td>${stats.count}</td>
+                        <td><strong>${(stats.sum / stats.count).toFixed(1)}</strong></td>
+                        <td>${stats.min}</td>
+                        <td>${stats.max}</td>
+                    </tr>
+                `).join('');
+
+                const userScores = {};
+                history.forEach(h => {
+                    if (!userScores[h.userId]) {
+                        userScores[h.userId] = { sum: 0, count: 0 };
+                    }
+                    userScores[h.userId].sum += h.score;
+                    userScores[h.userId].count++;
+                });
+
+                const topUsers = Object.entries(userScores)
+                    .map(([userId, stats]) => {
+                        const user = users.find(u => u.id == userId);
+                        return {
+                            user,
+                            avg: stats.sum / stats.count,
+                            count: stats.count
+                        };
+                    })
+                    .filter(u => u.user)
+                    .sort((a, b) => b.avg - a.avg)
+                    .slice(0, 10);
+
+                const topUsersTable = document.getElementById('topUsersTable');
+                topUsersTable.innerHTML = topUsers.map((u, i) => `
+                    <tr>
+                        <td>${i + 1}</td>
+                        <td>${u.user.fullname}</td>
+                        <td>${u.user.email}</td>
+                        <td><strong>${u.avg.toFixed(1)}</strong></td>
+                        <td>${u.count}</td>
+                    </tr>
+                `).join('');
+
+            } catch (e) {
+                console.error('Lỗi tải dữ liệu:', e);
+                alert('Lỗi kết nối server. Hãy chắc chắn server đang chạy!');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadData);
+    </script>
+</body>
+</html>

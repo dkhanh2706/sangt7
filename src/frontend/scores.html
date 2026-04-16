@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Điểm số - SmartLearn</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .page-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 24px; padding: 40px; color: white; margin-bottom: 32px; }
+        .page-header h1 { font-size: 2rem; margin-bottom: 8px; }
+        .scores-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+        .score-card { background: white; border-radius: 16px; padding: 28px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .score-card h3 { font-size: 1.1rem; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+        .score-value { font-size: 2.5rem; font-weight: 700; color: #4f46e5; margin-bottom: 8px; }
+        .score-label { color: #6b7280; font-size: 0.9rem; }
+        .score-bar { height: 8px; background: #e5e7eb; border-radius: 4px; margin-top: 16px; overflow: hidden; }
+        .score-bar-fill { height: 100%; background: linear-gradient(90deg, #4f46e5, #6366f1); border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="nav-brand"><i class="fas fa-graduation-cap"></i><span>SmartLearn</span></div>
+        <nav class="nav-menu">
+            <a href="index.html" class="nav-link"><i class="fas fa-home"></i><span>Trang chủ</span></a>
+            <a href="exercises.html" class="nav-link"><i class="fas fa-pencil-alt"></i><span>Luyện tập</span></a>
+            <a href="scores.html" class="nav-link active"><i class="fas fa-chart-line"></i><span>Điểm số</span></a>
+            <a href="history.html" class="nav-link"><i class="fas fa-history"></i><span>Lịch sử</span></a>
+            <a href="profile.html" class="nav-link"><i class="fas fa-user"></i><span>Hồ sơ</span></a>
+        </nav>
+        <div class="nav-user" id="navUser">
+            <div class="user-avatar"><i class="fas fa-user"></i></div>
+            <span class="user-name" id="userName">Người dùng</span>
+        </div>
+    </header>
+    <main class="main-content">
+        <div class="page-header">
+            <h1>Điểm số</h1>
+            <p>Theo dõi điểm số và tiến độ học tập của bạn</p>
+        </div>
+        <div class="scores-grid" id="scoresGrid">
+            <div class="empty-state" style="grid-column: 1/-1;">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Đang tải điểm số...</p>
+            </div>
+        </div>
+    </main>
+    <script src="js/main.js"></script>
+    <script>
+        const subjectInfo = {
+            'Python': { icon: 'fab fa-python', color: '#3776ab', suggestion: 'Học thêm: Biến, hàm, vòng lặp, list comprehension, OOP cơ bản' },
+            'JavaScript': { icon: 'fab fa-js', color: '#f7df1e', suggestion: 'Học thêm: ES6+, arrow function, DOM manipulation, async/await, array methods' },
+            'Toán': { icon: 'fas fa-calculator', color: '#4f46e5', suggestion: 'Học thêm: Đạo hàm, tích phân, lượng giác, hình học, logarith' },
+            'Tiếng Anh': { icon: 'fas fa-language', color: '#10b981', suggestion: 'Học thêm: Ngữ pháp cơ bản, thì quá khứ, so sánh, mạo từ' }
+        };
+
+        async function loadScores() {
+            const user = JSON.parse(sessionStorage.getItem('user') || '{}');
+            const userId = user.id;
+            
+            if (!userId) {
+                document.getElementById('scoresGrid').innerHTML = `
+                    <div class="empty-state" style="grid-column: 1/-1;">
+                        <i class="fas fa-user-clock"></i>
+                        <p>Vui lòng đăng nhập để xem điểm số</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/history/${userId}`);
+                const history = await response.json();
+                
+                if (history.length === 0) {
+                    document.getElementById('scoresGrid').innerHTML = `
+                        <div class="empty-state" style="grid-column: 1/-1;">
+                            <i class="fas fa-clipboard-list"></i>
+                            <p>Chưa có điểm số. Hãy làm bài tập đầu tiên!</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                const scoresBySubject = {};
+                history.forEach(h => {
+                    if (!scoresBySubject[h.subject]) {
+                        scoresBySubject[h.subject] = [];
+                    }
+                    scoresBySubject[h.subject].push((h.score / h.total) * 10);
+                });
+                
+                let html = '';
+                for (const [subject, scores] of Object.entries(scoresBySubject)) {
+                    const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
+                    const info = subjectInfo[subject] || { icon: 'fas fa-book', color: '#6b7280', suggestion: '' };
+                    const percent = avg * 10;
+                    
+                    html += `
+                        <div class="score-card">
+                            <h3><i class="${info.icon}" style="color: ${info.color};"></i> ${subject}</h3>
+                            <div class="score-value">${avg.toFixed(1)}</div>
+                            <div class="score-label">Điểm trung bình (${scores.length} bài)</div>
+                            <div class="score-bar"><div class="score-bar-fill" style="width: ${percent}%;"></div></div>
+                            ${avg < 5 ? `<div style="margin-top: 16px; padding: 12px; background: #fef3c7; border-radius: 8px; color: #92400e; font-size: 0.85rem;"><i class="fas fa-lightbulb"></i> ${info.suggestion}</div>` : ''}
+                        </div>
+                    `;
+                }
+                
+                document.getElementById('scoresGrid').innerHTML = html || `
+                    <div class="empty-state" style="grid-column: 1/-1;">
+                        <i class="fas fa-clipboard-list"></i>
+                        <p>Chưa có điểm số</p>
+                    </div>
+                `;
+            } catch (e) {
+                document.getElementById('scoresGrid').innerHTML = `
+                    <div class="empty-state" style="grid-column: 1/-1;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Không thể tải điểm số. Server có thể chưa chạy.</p>
+                    </div>
+                `;
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', loadScores);
+    </script>
+</body>
+</html>

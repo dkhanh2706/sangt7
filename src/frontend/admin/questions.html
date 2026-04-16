@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý câu hỏi - Admin</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .dashboard {
+            min-height: 100vh;
+            background: #f3f4f6;
+        }
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            height: 100vh;
+            background: linear-gradient(180deg, #4f46e5 0%, #4338ca 100%);
+            padding: 24px;
+            color: white;
+        }
+        .sidebar h2 {
+            font-size: 1.5rem;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .sidebar nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            transition: all 0.3s;
+        }
+        .sidebar nav a:hover, .sidebar nav a.active {
+            background: rgba(255,255,255,0.15);
+            color: white;
+        }
+        .sidebar .logout {
+            position: absolute;
+            bottom: 24px;
+            left: 24px;
+            right: 24px;
+        }
+        .sidebar .logout a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s;
+            background: rgba(239,68,68,0.2);
+        }
+        .sidebar .logout a:hover {
+            background: rgba(239,68,68,0.4);
+            color: white;
+        }
+        .main {
+            margin-left: 260px;
+            padding: 32px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+        .header h1 {
+            font-size: 1.75rem;
+            color: #1f2937;
+        }
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background: #4f46e5;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #4338ca;
+        }
+        .subject-tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+        .subject-tab {
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .subject-tab:hover {
+            border-color: #4f46e5;
+        }
+        .subject-tab.active {
+            background: #4f46e5;
+            color: white;
+            border-color: #4f46e5;
+        }
+        .table-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .table-card h3 {
+            padding: 20px 24px;
+            font-size: 1.1rem;
+            color: #1f2937;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 16px 24px; text-align: left; }
+        th { background: #f9fafb; font-weight: 600; color: #6b7280; font-size: 0.85rem; text-transform: uppercase; }
+        td { color: #1f2937; border-bottom: 1px solid #e5e7eb; }
+        tr:last-child td { border-bottom: none; }
+        .question-text {
+            max-width: 300px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .answer-preview {
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+        .correct-badge {
+            background: #d1fae5;
+            color: #059669;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            margin-right: 8px;
+            transition: all 0.2s;
+        }
+        .action-btn.edit {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+        .action-btn.edit:hover { background: #bfdbfe; }
+        .action-btn.delete {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        .action-btn.delete:hover { background: #fecaca; }
+        .message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-weight: 500;
+            z-index: 1000;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(100px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .message.success { background: #d1fae5; color: #065f46; border-left: 4px solid #059669; }
+        .message.error { background: #fee2e2; color: #991b1b; border-left: 4px solid #dc2626; }
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            width: 500px;
+            max-width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal h3 { margin-bottom: 20px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #374151;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #4f46e5;
+        }
+        .answer-input {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+        .answer-input input {
+            flex: 1;
+        }
+        .answer-input input.correct {
+            border-color: #059669;
+            background: #d1fae5;
+        }
+        .answer-radio {
+            width: 20px;
+            height: 20px;
+        }
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        .modal-buttons button {
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            border: none;
+        }
+        .modal-buttons .cancel {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+        .modal-buttons .confirm {
+            background: #4f46e5;
+            color: white;
+        }
+        .modal-buttons .confirm:hover { background: #4338ca; }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <aside class="sidebar">
+            <h2><i class="fas fa-shield-alt"></i> Admin Panel</h2>
+            <nav>
+                <a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a>
+                <a href="questions.html" class="active"><i class="fas fa-question-circle"></i> Quản lý câu hỏi</a>
+                <a href="notebook.html"><i class="fas fa-chart-bar"></i> Phân tích dữ liệu</a>
+            </nav>
+            <div class="logout">
+                <a href="../login.html" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
+            </div>
+        </aside>
+        
+        <main class="main">
+            <div class="header">
+                <h1>Quản lý câu hỏi</h1>
+                <button class="btn btn-primary" onclick="openAddModal()">
+                    <i class="fas fa-plus"></i> Thêm câu hỏi
+                </button>
+            </div>
+            
+            <div class="subject-tabs" id="subjectTabs">
+                <button class="subject-tab active" data-subject="python">
+                    <i class="fab fa-python"></i> Python
+                </button>
+                <button class="subject-tab" data-subject="javascript">
+                    <i class="fab fa-js"></i> JavaScript
+                </button>
+                <button class="subject-tab" data-subject="math">
+                    <i class="fas fa-calculator"></i> Toán
+                </button>
+                <button class="subject-tab" data-subject="english">
+                    <i class="fas fa-language"></i> Tiếng Anh
+                </button>
+            </div>
+            
+            <div class="table-card">
+                <h3>Danh sách câu hỏi <span id="questionCount" style="font-weight: 400; font-size: 0.9rem; color: #6b7280;"></span></h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Câu hỏi</th>
+                            <th>Đáp án</th>
+                            <th>Đúng</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="questionList"></tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+    
+    <div class="modal-overlay" id="questionModal">
+        <div class="modal">
+            <h3 id="modalTitle">Thêm câu hỏi</h3>
+            <form id="questionForm">
+                <input type="hidden" id="questionId">
+                <div class="form-group">
+                    <label>Môn học</label>
+                    <select id="subject" required>
+                        <option value="python">Python</option>
+                        <option value="javascript">JavaScript</option>
+                        <option value="math">Toán</option>
+                        <option value="english">Tiếng Anh</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Độ khó</label>
+                    <select id="difficulty" required>
+                        <option value="easy">Dễ</option>
+                        <option value="medium">Trung bình</option>
+                        <option value="hard">Khó</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Câu hỏi</label>
+                    <input type="text" id="question" required placeholder="Nhập câu hỏi">
+                </div>
+                <div class="form-group">
+                    <label>Đáp án (click radio để chọn đáp án đúng)</label>
+                    <div id="answersContainer">
+                        <div class="answer-input">
+                            <input type="radio" name="correct" value="0" class="answer-radio">
+                            <input type="text" class="answer-field" placeholder="Đáp án A" data-index="0">
+                        </div>
+                        <div class="answer-input">
+                            <input type="radio" name="correct" value="1" class="answer-radio">
+                            <input type="text" class="answer-field" placeholder="Đáp án B" data-index="1">
+                        </div>
+                        <div class="answer-input">
+                            <input type="radio" name="correct" value="2" class="answer-radio">
+                            <input type="text" class="answer-field" placeholder="Đáp án C" data-index="2">
+                        </div>
+                        <div class="answer-input">
+                            <input type="radio" name="correct" value="3" class="answer-radio">
+                            <input type="text" class="answer-field" placeholder="Đáp án D" data-index="3">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="cancel" onclick="closeModal()">Hủy</button>
+                    <button type="submit" class="confirm">Lưu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal">
+            <h3>Xác nhận xóa</h3>
+            <p id="deleteQuestionText" style="color: #6b7280; margin-bottom: 16px;"></p>
+            <p style="color: #dc2626; font-size: 0.9rem;">Cảnh báo: Hành động này sẽ xóa vĩnh viễn câu hỏi!</p>
+            <div class="modal-buttons">
+                <button class="cancel" onclick="closeDeleteModal()">Hủy</button>
+                <button class="confirm" style="background: #dc2626;" onclick="confirmDelete()">Xóa</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="message"></div>
+    
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+        let currentSubject = 'python';
+        let pendingDeleteId = null;
+        
+        function checkAuth() {
+            const user = JSON.parse(sessionStorage.getItem('user') || '{}');
+            if (!user.role || user.role !== 'admin') {
+                window.location.href = '../login.html';
+            }
+        }
+
+        function logout() {
+            sessionStorage.removeItem('user');
+            window.location.href = '../login.html';
+        }
+
+        function showMessage(text, type) {
+            const msg = document.getElementById('message');
+            msg.textContent = text;
+            msg.className = `message ${type} show`;
+            setTimeout(() => msg.classList.remove('show'), 3000);
+        }
+
+        document.querySelectorAll('.subject-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                currentSubject = this.dataset.subject;
+                document.querySelectorAll('.subject-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                loadQuestions();
+            });
+        });
+
+        async function loadQuestions() {
+            try {
+                const response = await fetch(`${API_URL}/questions/${currentSubject}`);
+                const questions = await response.json();
+                
+                document.getElementById('questionCount').textContent = `(${questions.length} câu)`;
+                
+                const tbody = document.getElementById('questionList');
+                if (questions.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #6b7280;">Chưa có câu hỏi nào</td></tr>';
+                    return;
+                }
+                
+                const answers = JSON.parse(questions[0].answers || '[]');
+                const letters = ['A', 'B', 'C', 'D'];
+                
+                tbody.innerHTML = questions.map(q => {
+                    const ans = JSON.parse(q.answers || '[]');
+                    const ansHtml = ans.map((a, i) => `${letters[i]}. ${a}`).join('<br>');
+                    return `<tr>
+                        <td>${q.id}</td>
+                        <td class="question-text" title="${q.question}">${q.question}</td>
+                        <td class="answer-preview">${ansHtml}</td>
+                        <td><span class="correct-badge">${letters[q.correct]}</span></td>
+                        <td>
+                            <button class="action-btn edit" onclick='openEditModal(${JSON.stringify(q).replace(/'/g, "&#39;")})'>
+                                <i class="fas fa-edit"></i> Sửa
+                            </button>
+                            <button class="action-btn delete" onclick="openDeleteModal(${q.id}, '${q.question.replace(/'/g, "\\'")}')">
+                                <i class="fas fa-trash"></i> Xóa
+                            </button>
+                        </td>
+                    </tr>`;
+                }).join('');
+            } catch (e) {
+                console.error(e);
+                showMessage('Lỗi tải câu hỏi', 'error');
+            }
+        }
+
+        function openAddModal() {
+            document.getElementById('modalTitle').textContent = 'Thêm câu hỏi';
+            document.getElementById('questionId').value = '';
+            document.getElementById('subject').value = currentSubject;
+            document.getElementById('difficulty').value = 'easy';
+            document.getElementById('question').value = '';
+            document.querySelectorAll('.answer-field').forEach(input => input.value = '');
+            document.querySelectorAll('.answer-radio').forEach(r => r.checked = false);
+            document.getElementById('questionModal').classList.add('show');
+        }
+
+        function openEditModal(q) {
+            document.getElementById('modalTitle').textContent = 'Sửa câu hỏi';
+            document.getElementById('questionId').value = q.id;
+            document.getElementById('subject').value = q.subject;
+            document.getElementById('difficulty').value = q.difficulty || 'easy';
+            document.getElementById('question').value = q.question;
+            
+            const ans = JSON.parse(q.answers || '[]');
+            document.querySelectorAll('.answer-field').forEach((input, i) => {
+                input.value = ans[i] || '';
+            });
+            document.querySelectorAll('.answer-radio').forEach(r => {
+                r.checked = parseInt(r.value) === q.correct;
+            });
+            
+            document.getElementById('questionModal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('questionModal').classList.remove('show');
+        }
+
+        function openDeleteModal(id, question) {
+            pendingDeleteId = id;
+            document.getElementById('deleteQuestionText').textContent = `Xóa câu hỏi: "${question}"`;
+            document.getElementById('deleteModal').classList.add('show');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('show');
+            pendingDeleteId = null;
+        }
+
+        async function confirmDelete() {
+            if (!pendingDeleteId) return;
+            
+            try {
+                const response = await fetch(`${API_URL}/questions/${pendingDeleteId}`, { method: 'DELETE' });
+                const result = await response.json();
+                
+                if (result.success) {
+                    showMessage(result.message, 'success');
+                    closeDeleteModal();
+                    loadQuestions();
+                } else {
+                    showMessage(result.message, 'error');
+                }
+            } catch (e) {
+                showMessage('Lỗi kết nối server', 'error');
+            }
+        }
+
+        document.getElementById('questionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const questionId = document.getElementById('questionId').value;
+            const subject = document.getElementById('subject').value;
+            const difficulty = document.getElementById('difficulty').value;
+            const question = document.getElementById('question').value;
+            
+            const answers = [];
+            document.querySelectorAll('.answer-field').forEach(input => {
+                answers.push(input.value);
+            });
+            
+            const correct = document.querySelector('input[name="correct"]:checked');
+            if (!correct || answers.some(a => !a.trim())) {
+                showMessage('Vui lòng nhập đầy đủ đáp án và chọn đáp án đúng', 'error');
+                return;
+            }
+            
+            const data = {
+                subject,
+                difficulty,
+                question,
+                answers: JSON.stringify(answers),
+                correct: parseInt(correct.value)
+            };
+            
+            try {
+                let url = `${API_URL}/questions`;
+                let method = 'POST';
+                
+                if (questionId) {
+                    url = `${API_URL}/questions/${questionId}`;
+                    method = 'PUT';
+                }
+                
+                const response = await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showMessage(result.message, 'success');
+                    closeModal();
+                    loadQuestions();
+                } else {
+                    showMessage(result.message, 'error');
+                }
+            } catch (e) {
+                showMessage('Lỗi kết nối server', 'error');
+            }
+        });
+
+        checkAuth();
+        loadQuestions();
+    </script>
+</body>
+</html>
