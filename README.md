@@ -22,34 +22,29 @@
 git clone https://github.com/dkhanh2706/hethongthonhminh.git
 cd intelligence-system
 🔹 2. Chạy Backend
-bash
-cd backend
 ➤ Tạo môi trường ảo (venv)
 bash
 python -m venv venv
 ➤ Kích hoạt môi trường ảo
 bash
 venv\Scripts\activate
+cd src
+cd backend
 ➤ Cài đặt thư viện
 bash
 pip install flask flask-cors
-Hoặc nếu có file requirements.txt:
 
 bash
 pip install -r requirements.txt
 ➤ Chạy server
 bash
-python app.py
+python server.py
 👉 Server sẽ chạy tại: http://127.0.0.1:5000
 
 ⛔ Dừng server
 bash
 CTRL + C
 🔹 3. Chạy Frontend
-Mở file:
-
-text
-frontend/index.html
 Dùng Live Server để chạy
 
 ⚠️ Lưu ý
